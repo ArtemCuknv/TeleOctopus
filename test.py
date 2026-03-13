@@ -1,13 +1,18 @@
 import requests
 
-url = "http://127.0.0.1:8000/send_text"
+url = "http://127.0.0.1:4000/render"
 data = {
-    "token": "BOT TOKEN", 
-    "chat_id": "ЧАТ АЙДИ ДОЛЖЕН БЫТЬ В формате INT", 
-    "message": {"text": "Hello from Python!"}
+  "template": "index",
+  "data": {
+    "name": "World"
+  },
+  "templates": {
+    "base": "<html><body>{% block body %}{% endblock %}</body></html>",
+    "index": "{% extends 'base' %}{% block body %}Привет, {{ name }}!{% endblock %}"
+  }
 }
 
-response = requests.post(url, json=data)
+response = requests.post(url, json=data, auth = ("test_user", "user"))
 
 print(f"Статус-код: {response.status_code}")
 print(f"Ответ: {response.json()}")

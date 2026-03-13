@@ -1,0 +1,58 @@
+<head>
+<style>
+    body { 
+        font-family: sans-serif; 
+        background: #000; 
+        color:#fff; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        padding-top: 50px; 
+    }
+    .card { 
+        background: #111; 
+        padding: 20px; 
+        border-radius: 15px; 
+        border: 1px solid #00A3FF; 
+        width: 350px; 
+    }
+    input, textarea { 
+        width: 100%; 
+        margin: 10px 0; 
+        padding: 10px; 
+        border-radius: 5px; 
+        border: 1px solid #333; 
+        background: #222; 
+        color: #fff; 
+        box-sizing: border-box;
+        transition: height 0.1s ease;
+    }
+    textarea{
+        transition: height 0.1s ease;
+    }
+    button { 
+        width: 100%; 
+        padding: 10px; 
+        background: #00A3FF; 
+        border: none; 
+        color: white; 
+        border-radius: 5px;
+        cursor: pointer; 
+        font-weight: bold; 
+        margin-top: 10px; }
+    #status { 
+        margin-top: 15px; 
+        font-size: 0.9em; 
+        color: #00FFCC; 
+    }
+</style>
+<script src="/static/form_send_message.js" defer></script>
+</head>
+<div class="card">
+    <h2 style="color: #00A3FF; text-align: center;">TeleOctopus Direct</h2>
+    <input type="text" id="token" placeholder="Токен бота">
+    <input type="text" id="chat_id" placeholder="Chat ID">
+    <textarea type = "text" id = text oninput='this.style.height = ""; this.style.height = this.scrollHeight + "px"' style="overflow:hidden; resize:none; min-height: 50px; width: 100%; box-sizing: border-box;"></textarea>
+    <button onclick="sendData()">Отправить пост</button>
+    <div id="status"></div>
+</div>
