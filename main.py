@@ -1,59 +1,57 @@
-from modules import config, database, bot
+from others import config, database, bot
 
 import asyncio
 import httpx
 import os
-from fastapi import FastAPI, Depends, HTTPException, Query, Path, Request
-from fastapi.responses import JSONResponse
+import jinja2
+from fastapi import FastAPI, Depends, HTTPException, Query, Path, Request, Form
+from fastapi.responses import JSONResponse, HTMLResponse
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
+from fastapi.staticfiles import StaticFiles
 from prometheus_fastapi_instrumentator import Instrumentator
+from fastapi.templating import Jinja2Templates
 from typing import Optional
 
 #Инициализация дб и конфига
 def init():
-	pass
+    pass
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-	yield
-	print("stopped")
+    yield
+    print("stopped")
 
 app = FastAPI(
-	title       = "ArtemSHI API",
-	summary     = "Api написано на FASTAPI",
-	description = "API для работы с курсами валют и секретными ключами",
-	version     = "1.0.0",
-	docs_url    = "/docs", 
-	openapi_url = "/openapi.json",
-	lifespan=lifespan
+    title       = "TeleOctopus API",
+    description = "API для работы с сеткой телеграмма",
+    version     = "0.1",
+    docs_url    = "/docs", 
+    openapi_url = "/openapi.json",
+    lifespan=lifespan 
 )
 instrumentator = Instrumentator().instrument(app)
 instrumentator.expose(app, endpoint="/metrics", include_in_schema=False)
 
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get("/", tags = ["General"], summary = 'Главная страница')
-async def public_index():
-	await bot.send_message_in_channel("8239610881:AAGFNpMb29Jy2nfmeSSqO9OWkPVjRBvEVzM", -1003882117368)
-	return {"message": "Successfully send message in channel"}
 
-#КАНАЛЫ:
+class RenderResponse(BaseModel):
+    status: str
+    error: str | dict | None = None
+    
+@app.get("/",response_class = HTMLResponse)
+async def public_index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "name": "Пользователь"})
 
-@app.get("/send_message_in_channel_{TOKEN}_{CHANNEL_ID}", tags = ["Channel"]) # TOKEN:str CHANNEL_ID:int ALL_DATA:dict
-async def send_message_in_channel(TOKEN:str, CHANNEL_ID:int):
-	print(f'DEBUG: {TOKEN}, {CHANNEL_ID}')
-	try:
-		await bot.send_message_in_channel(TOKEN, CHANNEL_ID, text = "test_message")
-		return {"message": "Successfully send message in channel"}
-	except Exception as e:
-		raise JSONResponse(status_code=401, content={"ERROR": f"{e}"})
-
-# @app.get("/send_messages_in_channels_{TOKEN}_{CHANNEL_ID}_{ALL_DATA}", tags = ["Channel"]) # TOKEN:str CHANNEL_ID:dict ALL_DATA:dict
-# async def send_messages_in_channels(TOKEN:str,CHANNEL_ID:dict, ALL_DATA:dict):
-# 	try:
-# 		for i in CHANNEL_ID:
-# 			await bot.send_message_in_channel(TOKEN, i)
-
-# 		return {"message": "Successfully send message in channel"}
-# 	except Exception as e:
-# 		raise JSONResponse(status_code=401, content={"ERROR": f"{e}"})
+@app.post("/send_text", tags = ["Channel"], summary = 'Главная страница', response_model = RenderResponse)
+async def send_text(request: Request):
+    try:
+        request = await request.json()
+        await bot.send_message_in_channel(token = request.get("token"), chat_id_channel = request.get("chat_id"), message = request.get("message"))
+        
+        return RenderResponse(status="ok")
+    except Exception as e:
+        return RenderResponse(status="error", error=f"Internal Server Error: {str(e)}")
+    

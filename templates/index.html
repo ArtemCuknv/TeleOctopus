@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>TeleOctopus | Direct Send</title>
+    <style>
+        body { font-family: sans-serif; background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
+        .card { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #00A3FF; width: 350px; }
+        input, textarea { width: 100%; margin: 10px 0; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #222; color: #fff; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #00A3FF; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        #status { margin-top: 15px; font-size: 0.9em; color: #00FFCC; }
+    </style>
+    <script src="/static/index.js" defer></script>
+</head>
+<body>
+
+    <div class="card">
+        <h2 style="color: #00A3FF; text-align: center;">TeleOctopus Direct</h2>
+        <input type="text" id="token" placeholder="Токен бота">
+        <input type="text" id="chat_id" placeholder="Chat ID">
+        <textarea id="text" placeholder="Текст сообщения" rows="4"></textarea>
+        <button onclick="sendData()">Отправить пост</button>
+        <div id="status"></div>
+    </div>
+
+    </body>
+</html>
