@@ -1,4 +1,6 @@
 # TELEOCTOPUS
+## [TELEGRAM CHANNEL](https://t.me/TeleOctopus)
+
 ![Иллюстрация к проекту](img/read.png)
 
 ## Готовые функции:
