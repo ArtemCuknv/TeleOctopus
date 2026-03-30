@@ -6,5 +6,5 @@ venv/
 .pytest_cache
 .vscode/
 config.py
-database/
+database.db
 .git

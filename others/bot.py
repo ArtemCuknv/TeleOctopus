@@ -21,3 +21,14 @@ async def send_message_in_channel(token: str, chat_id_channel: int, message: dic
     finally:
         await bot.session.close()
 
+async def bot_info(token: str):
+    try:
+        bot = await client(token)
+        info = await bot.get_me()
+        await bot.session.close()
+        return info
+    except Exception as e:
+        print(f"Ошибка при получении информации о боте: {e}")
+        return None
+    finally:
+        await bot.session.close()

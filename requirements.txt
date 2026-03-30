@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+PyYAML
+pytest
+httpx
+prometheus_fastapi_instrumentator
+aiomysql
+pytest-asyncio
+pytest
+aiogram
