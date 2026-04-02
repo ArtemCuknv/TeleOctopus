@@ -1,9 +1,5 @@
 from others import config, database, bot
 
-import asyncio
-import httpx
-import os
-import jinja2
 from fastapi import FastAPI, Depends, HTTPException, Query, Path, Request, Form
 from fastapi.responses import JSONResponse, HTMLResponse
 from pydantic import BaseModel
@@ -11,7 +7,6 @@ from contextlib import asynccontextmanager
 from fastapi.staticfiles import StaticFiles
 from prometheus_fastapi_instrumentator import Instrumentator
 from fastapi.templating import Jinja2Templates
-from typing import Optional
 
 #Инициализация дб и конфига
 def init():
@@ -35,6 +30,7 @@ instrumentator.expose(app, endpoint="/metrics", include_in_schema=False)
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 
 class RenderResponse(BaseModel):
