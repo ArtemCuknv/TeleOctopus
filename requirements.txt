@@ -8,3 +8,4 @@ aiomysql
 pytest-asyncio
 pytest
 aiogram
+eel
