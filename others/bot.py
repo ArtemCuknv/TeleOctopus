@@ -1,34 +1,35 @@
-from aiogram import Bot, Dispatcher, html
+#Мой папа думает что я проститутка
+
+import asyncio
+from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart
-from aiogram.types import Message
 
-async def client(token: str):
+
+def client(token: str):
     bot = Bot(token=token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    
     return bot
 
 
 async def send_message_in_channel(token: str, chat_id_channel: int, message: dict, proxy: str = None):
-    bot = await client(token)
+    bot = client(token)
 
-    message = message.get("text")
+    text = message.get("text")
     try:
-        await bot.send_message(chat_id_channel, text = message)
+        await bot.send_message(chat_id=chat_id_channel, text=text, parse_mode=ParseMode.HTML)
     except Exception as e:
         print(e)
+        raise RuntimeError(f'ERROR {str(e)}')
     finally:
         await bot.session.close()
 
+
 async def bot_info(token: str):
+    bot = client(token)
     try:
-        bot = await client(token)
         info = await bot.get_me()
-        await bot.session.close()
         return info
     except Exception as e:
-        print(f"Ошибка при получении информации о боте: {e}")
-        return None
+        raise RuntimeError(f"Ошибка при получении информации о боте {str(e)}")
     finally:
         await bot.session.close()

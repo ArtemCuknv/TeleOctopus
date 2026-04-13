@@ -6,5 +6,4 @@ httpx
 prometheus_fastapi_instrumentator
 aiomysql
 pytest-asyncio
-pytest
 aiogram
