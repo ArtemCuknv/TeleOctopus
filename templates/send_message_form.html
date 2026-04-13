@@ -14,8 +14,10 @@
 </header>
 <div class="card">
     <h2>TeleOctopus Direct</h2>
+    <input type="text" id="api_id" placeholder="API ID">
+    <input type="text" id="api_hash" placeholder="API Hash">
     <input type="text" id="token" placeholder="Токен бота">
-    <input type="text" id="chat_id" placeholder="Chat ID">
+    <input type="text" id="chat_id" placeholder="Username канала">
     <textarea id="text" oninput='this.style.height = ""; this.style.height = this.scrollHeight + "px"'></textarea>
     <button id="sendButton" onclick="sendData()">Отправить пост</button>
     <div id="status"></div>

@@ -23,6 +23,7 @@ def mock_database():
 def mock_bot():
     """Мок для модуля bot."""
     with patch('app.main.bot') as mock:
+        mock.bot_info = AsyncMock()
         yield mock
 
 
@@ -64,6 +65,8 @@ class TestSendText:
         mock_bot.send_message_in_channel = AsyncMock()
 
         payload = {
+            "api_id": "123456",
+            "api_hash": "test_api_hash",
             "token": "test_token",
             "chat_id": 123456,
             "message": {"text": "Test message"}
@@ -74,17 +77,21 @@ class TestSendText:
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
-        mock_bot.send_message_in_channel.assert_called_once_with(
-            token="test_token",
-            chat_id_channel=123456,
-            message={"text": "Test message"}
-        )
+        mock_bot.send_message_in_channel.assert_called_once()
+        call_kwargs = mock_bot.send_message_in_channel.call_args.kwargs
+        assert call_kwargs["api_id"] == 123456
+        assert call_kwargs["api_hash"] == "test_api_hash"
+        assert call_kwargs["bot_token"] == "test_token"
+        assert call_kwargs["chat_id_channel"] == 123456
+        assert call_kwargs["message"] == {"text": "Test message"}
 
     def test_send_text_error(self, client, mock_bot):
         """Тест обработки ошибки при отправке сообщения."""
         mock_bot.send_message_in_channel = AsyncMock(side_effect=Exception("Test error"))
 
         payload = {
+            "api_id": "123456",
+            "api_hash": "test_api_hash",
             "token": "test_token",
             "chat_id": 123456,
             "message": {"text": "Test message"}
@@ -149,18 +156,30 @@ class TestAddBotPost:
         """Тест успешного добавления бота."""
         mock_database.add_bot = AsyncMock()
 
-        response = client.post("/add_bot_post", data={"token": "test_token"})
+        response = client.post("/add_bot_post", data={
+            "token": "test_token",
+            "api_id": "123456",
+            "api_hash": "test_api_hash"
+        })
 
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
-        mock_database.add_bot.assert_called_once_with("test_token")
+        mock_database.add_bot.assert_called_once()
+        call_kwargs = mock_database.add_bot.call_args.kwargs
+        assert call_kwargs["token"] == "test_token"
+        assert call_kwargs["api_id"] == 123456
+        assert call_kwargs["api_hash"] == "test_api_hash"
 
     def test_add_bot_post_error(self, client, mock_database):
         """Тест обработки ошибки при добавлении бота."""
         mock_database.add_bot = AsyncMock(side_effect=Exception("Add bot error"))
 
-        response = client.post("/add_bot_post", data={"token": "test_token"})
+        response = client.post("/add_bot_post", data={
+            "token": "test_token",
+            "api_id": "123456",
+            "api_hash": "test_api_hash"
+        })
 
         assert response.status_code == 200
         data = response.json()
