@@ -2,11 +2,15 @@ async function sendData() {
     const statusDiv = document.getElementById('status');
     const sendBtn = document.getElementById('sendButton');
 
+    const api_id = document.getElementById('api_id').value.trim();
+    const api_hash = document.getElementById('api_hash').value.trim();
     const token = document.getElementById('token').value.trim();
     const chat_id = document.getElementById('chat_id').value.trim();
     const text = document.getElementById('text').value.trim();
 
-    if (!token || !chat_id || !text) {
+    console.log(api_id)
+
+    if (!api_id || !api_hash || !token || !chat_id || !text) {
         statusDiv.innerText = 'Заполните все поля!';
         return;
     }
@@ -15,10 +19,13 @@ async function sendData() {
     if (sendBtn) sendBtn.disabled = true;
 
     const payload = {
+        api_id,
+        api_hash,
         token,
         chat_id,
         message: { text }
     };
+    console.log('Sending payload:', payload);
     try {
         const response = await fetch('/send_text', {
             method: 'POST',
@@ -44,13 +51,18 @@ async function sendData() {
 }
 
 async function addBot() {
-    const token = document.getElementById("token").value;
-    if (!token) {
-        document.getElementById("status").innerText = "Пожалуйста, введите токен бота.";
+    const api_id = document.getElementById("api_id").value.trim();
+    const api_hash = document.getElementById("api_hash").value.trim();
+    const token = document.getElementById("token").value.trim();
+
+    if (!api_id || !api_hash || !token) {
+        document.getElementById("status").innerText = "Заполните все поля!";
         return;
     }
 
     const formData = new FormData();
+    formData.append("api_id", api_id);
+    formData.append("api_hash", api_hash);
     formData.append("token", token);
 
     try {

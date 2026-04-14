@@ -15,10 +15,10 @@ async def create_db():
                   )''')
         conn.commit()
 
-async def add_bot(token):
+async def add_bot(token, api_id, api_hash):
     try:
 
-        info = await bot_module.bot_info(token)
+        info = await bot_module.bot_info(token=token, api_id=api_id, api_hash=api_hash)
         bot_name = getattr(info, 'first_name', None) or getattr(info, 'username', None)
 
         if not bot_name:

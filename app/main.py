@@ -53,9 +53,36 @@ async def get_send_message(request: Request):
 async def send_text(request: Request):
     try:
         payload = await request.json()
-        await bot.send_message_in_channel(token=payload.get("token"), chat_id_channel=payload.get("chat_id"), message=payload.get("message"))
+        api_id = payload.get("api_id")
+        api_hash = payload.get("api_hash")
+        token = payload.get("token")
+        chat_id = payload.get("chat_id")
+        message = payload.get("message")
+
+        missing = []
+        if not api_id: missing.append("api_id")
+        if not api_hash: missing.append("api_hash")
+        if not token: missing.append("token")
+        if not chat_id: missing.append("chat_id")
+        if not message: missing.append("message")
+
+        if missing:
+            return RenderResponse(
+                status="error",
+                error=f"Не заполнены поля: {', '.join(missing)}"
+            )
+
+        await bot.send_message_in_channel(
+            api_id=int(api_id),
+            api_hash=api_hash,
+            bot_token=token,
+            chat_id_channel=chat_id,
+            message=message
+        )
 
         return RenderResponse(status="ok")
+    except ValueError as e:
+        return RenderResponse(status="error", error=f"Неверный формат api_id: {str(e)}")
     except Exception as e:
         return RenderResponse(status="error", error=f"Internal Server Error: {str(e)}")
     
@@ -76,10 +103,15 @@ async def init_db(request: Request):
         return RenderResponse(status="error", error=f"Internal Server Error: {str(e)}")
 
 @app.post('/add_bot_post', response_model=RenderResponse)
-async def add_bot_post(token: str = Form(...)):
+async def add_bot_post(
+    token: str = Form(...),
+    api_id: str = Form(...),
+    api_hash: str = Form(...),
+):
     try:
-        print(token)
-        await database.add_bot(token)
+        await database.add_bot(token=token, api_id=int(api_id), api_hash=api_hash)
         return RenderResponse(status="ok")
+    except ValueError as e:
+        return RenderResponse(status="error", error=f"Неверный формат api_id: {str(e)}")
     except Exception as e:
         return RenderResponse(status="error", error=f"Internal Server Error: {str(e)}")
